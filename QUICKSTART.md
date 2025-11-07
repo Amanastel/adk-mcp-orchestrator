@@ -30,7 +30,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ### Step 1: Create Virtual Environment with uv
 
 ```bash
-cd /Users/amankumar/Developer/agenticorch-assignment
+cd agenticorch-assignment
 
 # Create venv with uv (FAST!)
 uv venv
@@ -268,7 +268,7 @@ uv pip install -r requirements.txt
 
 ```bash
 # Make sure you're in the project directory
-cd /Users/amankumar/Developer/agenticorch-assignment
+cd agenticorch-assignment
 
 # Run the agent from the project root
 python3 adk_agent.py --task info --no-ai

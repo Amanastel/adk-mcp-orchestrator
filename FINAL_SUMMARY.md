@@ -178,7 +178,7 @@ All commands tested and working:
 
 ### Start MCP Server
 ```bash
-cd /Users/amankumar/Developer/agenticorch-assignment
+cd agenticorch-assignment
 python3 -m uvicorn mcp_server:app --reload --port 8001
 ```
 
@@ -421,7 +421,7 @@ All packages from requirements.txt installed successfully:
 
 ### Option 1: Automated Setup (Recommended)
 ```bash
-cd /Users/amankumar/Developer/agenticorch-assignment
+cd agenticorch-assignment
 ./setup.sh
 ```
 This script will:
