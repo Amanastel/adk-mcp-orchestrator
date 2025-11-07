@@ -1,22 +1,21 @@
 # Core Framework Dependencies
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.3
+pydantic-settings>=2.6.0
 
 # HTTP and API Requests
-requests==2.31.0
-httpx==0.26.0
+requests>=2.31.0
+httpx>=0.28.0
 
 # Google ADK (Generative AI SDK)
-google-generativeai==0.3.2
+google-generativeai>=0.3.2
 
 # MCP SDK (Model Context Protocol)
-fastmcp>=0.1.0
+fastmcp>=2.13.0
 
 # Environment and Configuration
-python-dotenv==1.0.0
+python-dotenv>=1.0.0
 
 # Utilities
-typing-extensions==4.9.0
-
+typing-extensions>=4.9.0
