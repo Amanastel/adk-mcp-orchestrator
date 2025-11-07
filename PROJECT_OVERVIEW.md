@@ -194,22 +194,24 @@ chmod +x test_server.sh
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture Overview - FastMCP
 
 ```
 User Command
     ↓
 ADK Agent (adk_agent.py)
     ↓
-MCP Client (HTTP)
+FastMCPClient (Direct Import)
     ↓
-MCP Server (mcp_server.py)
+MCP Tools (mcp_server.py) - @mcp.tool() decorated
     ↓
 External APIs (GitHub, OpenWeather, NewsAPI)
     ↓
 Response Processing
     ↓
 Beautiful Formatted Output
+
+Note: No HTTP server! Agent imports tools directly.
 ```
 
 ## 🔑 API Keys Configuration
@@ -260,13 +262,18 @@ Beautiful Formatted Output
 
 ## 🚀 Quick Commands Reference
 
-### Start Server
+### Setup with uv
 ```bash
-python3 -m uvicorn mcp_server:app --reload --port 8001
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
-### Run Agent Tasks
+### Run Agent Tasks (No Server Needed!)
 ```bash
+# Check MCP info
+python3 adk_agent.py --task info --no-ai
+
 # Weather
 python3 adk_agent.py --task weather --city Delhi --no-ai
 

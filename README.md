@@ -30,8 +30,8 @@ A production-ready implementation of Google Agent Development Kit (ADK) integrat
 
 This project demonstrates a complete ADK-MCP integration where:
 
-1. **MCP Server**: A FastAPI-based server exposing 3 production-ready tools
-2. **ADK Agent**: An intelligent agent that orchestrates MCP tools using Google's Gemini model
+1. **MCP Server**: A **FastMCP-based** server exposing 3 production-ready MCP tools
+2. **ADK Agent**: An intelligent agent that orchestrates FastMCP tools using Google's Gemini model
 3. **Real-world APIs**: Integration with GitHub, OpenWeather, and NewsAPI
 
 ### What is ADK?
@@ -47,6 +47,14 @@ Model Context Protocol (MCP) is a standardized way to:
 - Expose tools/functions to AI models
 - Enable consistent tool discovery and execution
 - Facilitate agent-to-tool communication
+
+### What is FastMCP?
+
+FastMCP is a Python library for building MCP servers easily:
+- Provides `@mcp.tool()` decorator for tool registration
+- Handles MCP protocol communication automatically
+- Supports stdio and HTTP transports
+- Makes MCP server development simple and pythonic
 
 ---
 
@@ -206,30 +214,19 @@ export NEWS_API_KEY="your_news_api_key_here"
 
 ## 🚀 Usage
 
-### Step 1: Start the MCP Server
+### Step 1: (Optional) Test MCP Server Directly
 
-In one terminal window:
+The FastMCP server can run standalone, but the ADK agent imports tools directly:
 
 ```bash
-# Using uvicorn directly
-uvicorn mcp_server:app --reload --port 8001
+# Optional: Run FastMCP server standalone
+python3 mcp_server.py
 
-# Or using the script directly
-python mcp_server.py
-```
-
-Expected output:
-```
-INFO:     Started server process
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8001
+# Or just run the agent (it imports MCP tools directly)
+python3 adk_agent.py --task info
 ```
 
-Verify server is running:
-```bash
-curl http://localhost:8001/health
-```
+**Note**: With FastMCP, the agent imports and calls tools directly without needing a running server!
 
 ### Step 2: Run the ADK Agent
 

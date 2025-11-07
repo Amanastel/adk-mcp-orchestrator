@@ -1,6 +1,17 @@
-# Quick Start Guide
+# Quick Start Guide - FastMCP Implementation
 
-Get up and running with the ADK + MCP integration in 5 minutes!
+Get up and running with the ADK + FastMCP integration in 5 minutes!
+
+## 🎯 What is Different with FastMCP?
+
+**Important**: With FastMCP, there's **NO separate server to run**! The ADK agent imports and calls MCP tools directly.
+
+```
+Traditional MCP:  Agent → HTTP → MCP Server → Tools
+FastMCP:         Agent → Direct Import → Tools
+```
+
+---
 
 ## Prerequisites
 
@@ -8,63 +19,95 @@ Get up and running with the ADK + MCP integration in 5 minutes!
 # Check Python version (must be 3.10+)
 python3 --version
 
-# Check pip is installed
-python3 -m pip --version
+# Install uv if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-## Step 1: Install Dependencies
+---
+
+## 🚀 Quick Setup (3 Steps)
+
+### Step 1: Create Virtual Environment with uv
 
 ```bash
 cd /Users/amankumar/Developer/agenticorch-assignment
 
-# Install all required packages
-python3 -m pip install fastapi uvicorn requests pydantic google-generativeai python-dotenv
+# Create venv with uv (FAST!)
+uv venv
+
+# Activate it
+source .venv/bin/activate  # macOS/Linux
+# or
+.venv\Scripts\activate  # Windows
 ```
 
-## Step 2: Set Environment Variables
+### Step 2: Install Dependencies with uv
 
 ```bash
-# Required API keys
-export GITHUB_TOKEN="your_github_personal_access_token"
-export OPENWEATHER_API_KEY="your_openweather_api_key"
+# Install all packages including fastmcp (super fast with uv!)
+uv pip install -r requirements.txt
 
-# Optional: Add Google API key for AI features
-# export GOOGLE_API_KEY="your_google_api_key"
-
-# Optional: Add News API key for real news data
-# export NEWS_API_KEY="your_news_api_key"
+# Verify fastmcp is installed
+python3 -c "import fastmcp; print('✅ FastMCP installed!')"
 ```
 
-## Step 3: Start MCP Server
+### Step 3: Set Environment Variables
 
-**Terminal 1:**
 ```bash
-cd /Users/amankumar/Developer/agenticorch-assignment
+# Copy the example file
+cp .env.example .env
 
-# Start the server
-python3 -m uvicorn mcp_server:app --reload --port 8001
-
-# You should see:
-# INFO:     Uvicorn running on http://0.0.0.0:8001
-# INFO:     Application startup complete.
+# Edit .env with your API keys
+# The file already has your keys if you're the project owner
 ```
 
-**Test it works:**
+Your `.env` should contain:
 ```bash
-# In another terminal
-curl http://localhost:8001/health
+GITHUB_TOKEN=your_github_token
+OPENWEATHER_API_KEY=your_openweather_key
+# Optional:
+NEWS_API_KEY=your_news_key
+GOOGLE_API_KEY=your_google_key
 ```
 
-## Step 4: Run ADK Agent
+---
 
-**Terminal 2:**
+## ✅ You're Ready! Run the Agent
 
-### Example 1: Get Weather
+**No server to start!** Just run the agent directly:
+
+```bash
+# Test 1: Check MCP server info
+python3 adk_agent.py --task info --no-ai
+```
+
+**Expected Output:**
+```
+🔍 Initializing FastMCP client...
+✅ FastMCP client initialized
+
+📋 MCP Server Information:
+   Name: Weather, GitHub & News Tools Server
+   Version: 1.0.0
+   Tools: get_weather, github_trends, get_news, server_info
+   Status: running
+
+🔑 API Keys Configured:
+   ✅ github
+   ✅ openweather
+   ❌ news
+```
+
+---
+
+## 📝 Example Commands
+
+### 1. Weather Task
 ```bash
 python3 adk_agent.py --task weather --city Delhi --no-ai
 ```
 
-**Expected Output:**
+**Output:**
 ```
 🌤️  Weather in Delhi, IN:
    Temperature: 25.34°C (feels like 24.37°C)
@@ -73,37 +116,39 @@ python3 adk_agent.py --task weather --city Delhi --no-ai
    Wind Speed: 2.59 m/s
 ```
 
-### Example 2: GitHub Trends
+### 2. GitHub Trends Task
 ```bash
 python3 adk_agent.py --task trends --lang python --count 3 --no-ai
 ```
 
-**Expected Output:**
+**Output:**
 ```
 ⭐ Top 3 Trending Python Repositories:
 
 1. public-apis/public-apis
    ⭐ 376,423 stars | 🍴 39,815 forks
-   ...
+   📝 A collective list of free APIs
+   🔗 https://github.com/public-apis/public-apis
 ```
 
-### Example 3: News Headlines
+### 3. News Task
 ```bash
 python3 adk_agent.py --task news --count 3 --no-ai
 ```
 
-### Example 4: Full Report
+### 4. Full Comprehensive Report
 ```bash
 python3 adk_agent.py --task full --lang javascript --city London --no-ai
 ```
 
-**Expected Output:**
+**Output:**
 ```
 ================================================================================
 📊 COMPREHENSIVE REPORT - 2025-11-07 20:39:19
 ================================================================================
 
 🌤️  Weather in London, GB:
+   Temperature: 14.72°C (feels like 14.39°C)
    ...
 
 ⭐ Top 5 Trending JavaScript Repositories:
@@ -114,146 +159,207 @@ python3 adk_agent.py --task full --lang javascript --city London --no-ai
 ================================================================================
 ```
 
-## Common Commands
+---
 
-### Different Cities
-```bash
-# US City
-python3 adk_agent.py --task weather --city "San Francisco" --no-ai
+## 🎓 Understanding FastMCP
 
-# European City
-python3 adk_agent.py --task weather --city Paris --no-ai
+### How It Works
 
-# Asian City
-python3 adk_agent.py --task weather --city Tokyo --no-ai
-```
+1. **MCP Server (`mcp_server.py`)**:
+   ```python
+   from fastmcp import FastMCP
+   
+   mcp = FastMCP("Server Name")
+   
+   @mcp.tool()
+   def get_weather(city: str) -> dict:
+       # Tool implementation
+   ```
 
-### Different Programming Languages
-```bash
-# JavaScript
-python3 adk_agent.py --task trends --lang javascript --count 5 --no-ai
+2. **ADK Agent (`adk_agent.py`)**:
+   ```python
+   # Import the mcp_server module
+   import mcp_server
+   
+   # Get the tool (decorated with @mcp.tool())
+   tool = getattr(mcp_server, "get_weather")
+   
+   # Access underlying function
+   result = tool.fn(city="Delhi")
+   ```
 
-# TypeScript
-python3 adk_agent.py --task trends --lang typescript --count 5 --no-ai
+### Key Differences from Traditional MCP
 
-# Rust
-python3 adk_agent.py --task trends --lang rust --count 5 --no-ai
-
-# Go
-python3 adk_agent.py --task trends --lang go --count 5 --no-ai
-```
-
-### Vary the Count
-```bash
-# Top 10 repositories
-python3 adk_agent.py --task trends --lang python --count 10 --no-ai
-
-# Just the top one
-python3 adk_agent.py --task trends --lang python --count 1 --no-ai
-```
-
-## Troubleshooting
-
-### Server not starting?
-```bash
-# Check if port 8001 is in use
-lsof -ti:8001
-
-# Kill the process if needed
-lsof -ti:8001 | xargs kill -9
-
-# Restart server
-python3 -m uvicorn mcp_server:app --reload --port 8001
-```
-
-### Connection refused?
-```bash
-# Make sure server is running
-curl http://localhost:8001/health
-
-# If not, start it in Terminal 1
-```
-
-### Missing modules?
-```bash
-# Reinstall dependencies
-python3 -m pip install -r requirements.txt
-```
-
-## Using AI Features
-
-If you have a Google API key:
-
-```bash
-# Set the key
-export GOOGLE_API_KEY="your_actual_key_here"
-
-# Run WITHOUT --no-ai flag
-python3 adk_agent.py --task weather --city Delhi
-
-# Output will include AI insights:
-# 💡 AI Insight: The weather in Delhi is warm...
-```
-
-## Testing the Server Directly
-
-### Health Check
-```bash
-curl http://localhost:8001/health | python3 -m json.tool
-```
-
-### Weather Tool
-```bash
-curl -X POST http://localhost:8001/tool/get_weather \
-  -H "Content-Type: application/json" \
-  -d '{"city": "Delhi"}' | python3 -m json.tool
-```
-
-### GitHub Trends Tool
-```bash
-curl -X POST http://localhost:8001/tool/github_trends \
-  -H "Content-Type: application/json" \
-  -d '{"language": "python", "count": 3}' | python3 -m json.tool
-```
-
-### News Tool
-```bash
-curl -X POST http://localhost:8001/tool/get_news \
-  -H "Content-Type: application/json" \
-  -d '{"count": 3}' | python3 -m json.tool
-```
-
-## Interactive API Documentation
-
-Once the server is running, visit:
-
-- **Swagger UI**: http://localhost:8001/docs
-- **ReDoc**: http://localhost:8001/redoc
-
-These provide interactive documentation where you can test all endpoints directly from your browser!
-
-## Help Command
-
-```bash
-python3 adk_agent.py --help
-```
-
-## Success Indicators
-
-✅ Server is healthy if `curl http://localhost:8001/health` returns 200
-✅ Agent works if you see "✅ MCP server is healthy" message
-✅ APIs working if you see real data (not mock)
-✅ Proper output if you see emojis and formatted text
-
-## Next Steps
-
-1. ✅ Try different cities and languages
-2. ✅ Explore the interactive docs at http://localhost:8001/docs
-3. ✅ Add Google API key for AI insights
-4. ✅ Read the full README.md for advanced usage
-5. ✅ Check TEST_RESULTS.md to see all test cases
+| Aspect | Traditional MCP | FastMCP (This Project) |
+|--------|----------------|------------------------|
+| Server Process | Separate HTTP server | No separate server |
+| Communication | HTTP/REST | Direct Python import |
+| Tool Registration | Manual | `@mcp.tool()` decorator |
+| Latency | Network overhead | Direct function call |
+| Setup | Start server first | Just run agent |
 
 ---
 
-**That's it! You're ready to use the ADK + MCP integration!** 🚀
+## 🔧 CLI Options Reference
 
+```bash
+python3 adk_agent.py [OPTIONS]
+
+Required:
+  --task {weather,trends,news,full,info}  Task to execute
+
+Optional:
+  --city TEXT           City for weather (default: Delhi)
+  --lang TEXT          Language for GitHub (default: python)
+  --count INT          Number of items (default: 5)
+  --no-ai             Disable AI insights
+  -h, --help          Show help
+```
+
+---
+
+## 🎯 Common Use Cases
+
+### For Developers
+```bash
+# Find trending repos in your language
+python3 adk_agent.py --task trends --lang rust --count 10 --no-ai
+
+# Get full report for your city
+python3 adk_agent.py --task full --lang go --city "San Francisco" --no-ai
+```
+
+### For Testing
+```bash
+# Test each MCP tool individually
+python3 adk_agent.py --task info --no-ai
+python3 adk_agent.py --task weather --city Tokyo --no-ai
+python3 adk_agent.py --task trends --lang typescript --count 3 --no-ai
+```
+
+### With AI Insights (if you have Google API key)
+```bash
+# Set your Google API key
+export GOOGLE_API_KEY="your_key"
+
+# Run without --no-ai flag for AI insights
+python3 adk_agent.py --task weather --city Delhi
+python3 adk_agent.py --task full --lang python --city Paris
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Import Error: No module named 'fastmcp'
+
+```bash
+# Make sure you're in the venv
+source .venv/bin/activate
+
+# Reinstall fastmcp
+uv pip install fastmcp
+
+# Or reinstall everything
+uv pip install -r requirements.txt
+```
+
+### ModuleNotFoundError: No module named 'mcp_server'
+
+```bash
+# Make sure you're in the project directory
+cd /Users/amankumar/Developer/agenticorch-assignment
+
+# Run the agent from the project root
+python3 adk_agent.py --task info --no-ai
+```
+
+### API Key Errors
+
+```bash
+# Check if .env file exists
+cat .env
+
+# Check if variables are loaded
+python3 -c "import os; from dotenv import load_dotenv; load_dotenv(); print('GitHub:', bool(os.getenv('GITHUB_TOKEN')))"
+
+# Re-export manually if needed
+export GITHUB_TOKEN="your_token"
+export OPENWEATHER_API_KEY="your_key"
+```
+
+### Tool Execution Errors
+
+```bash
+# Check if all MCP tools are accessible
+python3 -c "from mcp_server import get_weather, github_trends, get_news, server_info; print('✅ All tools imported successfully')"
+```
+
+---
+
+## 📊 Verify Installation
+
+Run this complete verification:
+
+```bash
+# 1. Check Python version
+python3 --version  # Should be 3.10+
+
+# 2. Activate venv
+source .venv/bin/activate
+
+# 3. Check fastmcp
+python3 -c "import fastmcp; print('FastMCP version:', fastmcp.__version__)"
+
+# 4. Check environment
+python3 -c "import os; from dotenv import load_dotenv; load_dotenv(); print('Env loaded')"
+
+# 5. Test MCP tools
+python3 adk_agent.py --task info --no-ai
+
+# 6. Test full flow
+python3 adk_agent.py --task weather --city Delhi --no-ai
+```
+
+If all commands work, you're ready to go! ✅
+
+---
+
+## 🚀 Next Steps
+
+1. **Try different tasks**: Experiment with weather, trends, news, and full reports
+2. **Change parameters**: Try different cities, languages, and counts
+3. **Add Google API key**: Get AI-powered insights with Gemini
+4. **Explore the code**: Look at `mcp_server.py` to see FastMCP decorators
+5. **Read README.md**: For comprehensive documentation
+
+---
+
+## 📚 Quick Reference
+
+### Essential Commands
+```bash
+# Setup
+uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
+
+# Run
+python3 adk_agent.py --task info --no-ai
+python3 adk_agent.py --task weather --city Delhi --no-ai
+python3 adk_agent.py --task full --lang python --city London --no-ai
+```
+
+### File Structure
+```
+agenticorch-assignment/
+├── mcp_server.py       # FastMCP tools (decorated with @mcp.tool())
+├── adk_agent.py        # ADK agent (imports MCP tools directly)
+├── requirements.txt    # Dependencies (includes fastmcp)
+├── .env               # Your API keys (not in git)
+└── .env.example       # Template
+```
+
+---
+
+**That's it! With FastMCP, setup is simple and fast.** 🚀
+
+**Key Takeaway**: No separate server process needed. The agent imports and calls MCP tools directly!
