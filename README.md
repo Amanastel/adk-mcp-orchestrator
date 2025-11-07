@@ -152,7 +152,7 @@ FastMCP is a Python library for building MCP servers easily:
 ### 1. Clone or Navigate to Project Directory
 
 ```bash
-cd /Users/amankumar/Developer/agenticorch-assignment
+cd agenticorch-assignment
 ```
 
 ### 2. Initialize UV Environment
